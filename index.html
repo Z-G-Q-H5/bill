@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Document</title>
+  <!-- 引入 layui.css -->
+  <link rel="stylesheet" href="lib/layui-v2.9.20/css/layui.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <div class="head">
+    <img src="images/close.png" class="close">
+  </div>
+  <div class="main">
+    <div class="user">
+      <div class="photo">
+        <img src="images/photo/1.png" id="avatar">
+      </div>
+      <div class="photo-name">
+        <input type="text" value="二中东门复印室">
+      </div>
+      <!-- <div class="photo-val"><span></span>3.00</div> -->
+      <div class="photo-val"><span></span><input type="text" value="3.00"></div>
+
+    </div>
+    <div class="hr"></div>
+    <div class="info">
+      <div class="info-row">
+        <div class="info-name">当前状态</div>
+        <div class="info-val">支付成功</div>
+      </div>
+      <div class="info-row">
+        <div class="info-name">支付时间</div>
+        <div class="info-val info-val-date">
+          <div id="ID-laydate-type-datetime">2024年12月11日</div>
+          <div id="ID-laydate-type-datetime2">11:12:03</div>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="info-name">支付方式</div>
+        <div class="info-val">
+          <input type="text" value="零钱" class="textL">
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="info-name">交易单号</div>
+        <div class="info-val deal">4200002335202410036810561001</div>
+      </div>
+      <div class="info-row">
+        <div class="info-name">商户单号</div>
+        <div class="info-val commercial">100202410031156204840004</div>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    <div class="info-val">账单服务</div>
+    <div class="hr"></div>
+    <div class="flex-div">
+      <div class="footer-item">
+        <img src="images/doubt.png" alt="">对订单有疑惑
+      </div>
+      <div class="footer-item footer-item2">
+        <img src="images/bill.png" alt="">在此商户的交易
+      </div>
+    </div>
+  </div>
+  <div class="bottom-hint">本服务由财务通提供</div>
+</body>
+<script src="js/jquery.js"></script>
+<script src="js/flexible-v1.0.0.js"></script>
+<script src="lib/layui-v2.9.20/layui.js"></script>
+<script>
+  layui.use(function () {
+    var laydate = layui.laydate
+    // 日期时间选择器 - 日期和时间选择器同时显示（全面板）
+    // 日期时间选择器
+    laydate.render({
+      elem: '#ID-laydate-type-datetime',
+      format: 'yyyy年MM月dd日',
+      done: function (value, date, endDate) {
+        $('.deal').click()
+        $('.commercial').click()
+      }
+    })
+
+    laydate.render({
+      elem: '#ID-laydate-type-datetime2',
+      type: 'time',
+      done: function (value, date, endDate) {
+        $('.commercial').click()
+      }
+    })
+  })
+  // $(document).ready(function () {
+
+  // 头像
+  const images = ['0.png', '1.png', '2.png', '3.png', '4.png', '5.png', '6.png', '7.png', '8.png', '9.png']
+  let currentIndex = Math.floor(Math.random() * images.length)
+  $('#avatar').attr('src', `images/photo/${images[currentIndex]}`)
+
+  $('#avatar').click(function () {
+    currentIndex = (currentIndex + 1) % images.length // 递增索引并循环到数组开头
+    $(this).attr('src', `images/photo/${images[currentIndex]}`) // 更新图片的 src 属性
+  })
+
+  // 交易单号
+  // 生成四位随机数字的函数
+  function generateRandomFourDigit () {
+    return Math.floor(1000 + Math.random() * 9000)
+  }
+
+  // 生成10位随机数字的函数
+  function generateRandomTenDigit () {
+    return Math.floor(1000000000 + Math.random() * 9000000000).toString() // 生成11位后去掉最前面的1
+  }
+
+  // 格式化日期的函数
+  function formatDate (dateStr) {
+    var year = dateStr.slice(0, 4) // 提取年份（前4位）
+    var month = dateStr.slice(5, 7) // 提取月份（第6-7位，注意索引从0开始）
+    var day = dateStr.slice(8, 10) // 提取日期（第9-10位）
+
+    // 如果月份或日期只有一位数，则前面补0（但在这个例子中，由于格式固定，这一步其实是多余的）
+    // month = month.length === 1 ? '0' + month : month;
+    // day = day.length === 1 ? '0' + day : day;
+
+    // 拼接年份、月份和日期
+    return year + month + day
+  }
+
+  // 获取当前日期的函数
+  function getCurrentDate () {
+    var dateStr = $('#ID-laydate-type-datetime').text() // 从元素中获取日期字符串
+    return formatDate(dateStr) // 格式化日期并返回
+  }
+
+  // 生成交易单号的函数
+  function generateTransactionNumber () {
+    var prefix = '4200'
+    var zeroPad = '00'
+    var randomFourDigit = generateRandomFourDigit().toString()
+    var currentDate = getCurrentDate()
+    var randomTenDigit = generateRandomTenDigit()
+
+    // 拼接交易单号
+    var transactionNumber = prefix + zeroPad + randomFourDigit + currentDate + randomTenDigit
+    return transactionNumber
+  }
+
+  // 为class为'deal'的元素绑定点击事件
+  $('.deal').click(function () {
+    // 生成交易单号并显示（这里假设要插入到元素的文本内容中）
+    var transactionNumber = generateTransactionNumber()
+    $(this).text(transactionNumber)
+  })
+
+
+
+  function generateMerchantOrderNumber () {
+    // 假设这些元素的值已经是用户选择好的日期和时间，格式为"YYYY年MM月DD日"和"HH:mm:ss"
+    // 我们需要将这些值转换为"YYYYMMDD"和"HHmmss"的格式
+    var date = $('#ID-laydate-type-datetime').text().replace(/年|月|日/g, '') // 转换为"20241211"
+    var time = $('#ID-laydate-type-datetime2').text().split(':').slice(0, 2).join('') // 转换为"111203"
+
+    // 生成一个9位的随机数
+    var randomNineDigits = Math.floor(100000000 + Math.random() * 900000000).toString() // 生成9位随机数，并去掉前导0（虽然这里不会有前导0）
+
+    // 拼接商户单号
+    var merchantOrderNumber = '100' + date + time + randomNineDigits
+
+    return merchantOrderNumber;
+  }
+
+  // 假设在某个事件触发时调用这个函数，比如点击一个按钮
+  $('.commercial').click(function (e) {
+    e.preventDefault()
+    $(this).text( generateMerchantOrderNumber())
+
+  })
+
+
+  // });
+</script>
+
+</html>
